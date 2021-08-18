@@ -1,21 +1,53 @@
 ﻿<!DOCTYPE html>
 <html>
+<style>
+    html,
+    body {
+        background: url("w.jpg") no-repeat fixed center;
+        height: 54%;
+    }
+
+    .main {
+        position: relative;
+        height: 100%;
+        
+    }
+
+    .in-middle {
+        color: #F27063;
+        font-family: 'Segoe UI';
+        font-size: 1.2em;
+        min-width: 194px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+</style>
+
 <head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.js"></script>
-  <meta charset="utf-8">
-  <title>JS Bin</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.js"></script>
+    <meta charset="utf-8">
+    <title>Us</title>
 </head>
+
 <body>
-    <div style="color: #F27063" id="output"></div>
+
+
+    <div class="main">
+        <div class="in-middle" id="output">
+        </div>
+    </div>
 
 </body>
+
 </html>
 
 
 
 <script>
-var ago = moment.duration(moment().diff("2021-08-01", "days"))+ " days with Minh Anh";
+    var ago = moment.duration(moment().diff("2021-08-01", "days")) + " days with Minh Anh";
 
-output.innerHTML = ago
+    output.innerHTML = ago
 
 </script>
