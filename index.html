@@ -1,67 +1,96 @@
-﻿<!DOCTYPE html>
-<html>
-<style>
-    html,
-    body {
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-position: center;
-        height: 54%;
-    }
-
-    .main {
-        position: relative;
-        height: 100%;
-
-    }
-
-    .in-middle {
-        font-family:'Conv_Segoe UI';
-        text-align: center;
-        color: #F27063;
-        font-size: 20pt;
-        min-width: 220px;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-</style>
-
-<head>
-    <link rel="stylesheet" href="fonts.css" type="text/css" charset="utf-8" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.js"></script>
-    <meta charset="utf-8">
-    <title>Us</title>
-</head>
-
-<body id="zxc">
+﻿
 
 
-    <div class="main">
-        <div class="in-middle" id="output">
-        </div>
+
+  
+  
+  
+  
+  
+
+
+  
+
+    
+
+      
+Pokémon GO 44/45 IV (97.8%) Raid Search Generator
+
+      
+Build an in‑game search string that finds 44/45 IV raid catches by CP at Level 20 (no weather) and Level 25 (weather‑boosted). Data are pulled from Pokémon GO Hub where possible.
+
+      
+
+        
+
+          Species text for in‑game search (optional but recommended)
+            e.g. zacian, mewtwo
+          
+          
+        
+
+        
+
+          GO Hub slug or Pokédex ID (form aware)
+            e.g. 888-Hero, 888-Crowned_Sword, 150
+          
+          
+        
+
+      
+
+      
+
+         include L20 (no weather)
+         include L25 (weather boost)
+         prefix each OR with species & israid
+        Tip: if form is unknown, try IDs like 150, 150-Shadow, 648-Aria, 641-Therian.
+      
+
+      
+
+        Generate
+        Copy
+        Open GO Hub source
+      
+
+      
+Ready. Example: set species to zacian, slug to 888-Hero.
+
+
+  <h3 style="margin:16px 0 8px">Output</h3>
+  <textarea id="out" class="out mono" placeholder="Your search string will appear here…" readonly></textarea>
+
+  <table class="tbl" id="cpTable" style="display:none">
+    <thead>
+      <tr>
+        <th>IVs</th>
+        <th class="muted">Filter bits</th>
+        <th>L20 CP (Raid/Egg)</th>
+        <th>L25 CP (Weather)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <details style="margin-top:14px">
+    <summary>⚠️ Having trouble (CORS)? Use manual paste fallback</summary>
+    <p>Some browsers or hosts may block cross‑site requests. As a fallback, open the Pokémon’s <em>CP & IV Chart</em> page on GO Hub, copy the whole page source (<kbd>Ctrl/Cmd</kbd> + <kbd>A</kbd>, then <kbd>Ctrl/Cmd</kbd> + <kbd>C</kbd>) and paste below, then press <strong>Parse pasted HTML</strong>.</p>
+    <textarea id="paste" class="out mono" placeholder="Paste the HTML of https://db.pokemongohub.net/pokemon/&lt;slug&gt;/iv-chart here…"></textarea>
+    <div class="row" style="margin-top:8px">
+      <button id="parse" class="btn">Parse pasted HTML</button>
+      <span class="tiny">Only the three 97.8% rows are parsed to get L20/L25 CP values.</span>
     </div>
+  </details>
+</div>
 
-</body>
+<footer>
+  Built for trainers. Not affiliated with Niantic, Nintendo, or The Pokémon Company. Data courtesy of <a href="https://db.pokemongohub.net/" target="_blank" rel="noopener">Pokémon GO Hub</a>.
+</footer>
 
-</html>
+
+  
+
+  
 
 
-
-<script>
-
-    var img = new Array();
-    var num = 1;
-    img[num] = new Image();
-    var imgSource = "w.jpg";
-    img[num].src = imgSource;
-    img[1].onload = function () {
-
-        document.getElementById("zxc").style.backgroundImage = "url('" + imgSource + "')";
-        var ago = moment.duration(moment().diff("2021-07-31", "days")) + " days with Minh Anh🌚";
-        output.innerHTML = ago
-
-    };
-
-</script>
