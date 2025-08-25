@@ -2,68 +2,58 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Pokémon Hub HTML Parser</title>
+  <title>PokémonHub HTML Parser</title>
   <style>
-    body { font-family: sans-serif; padding: 1em; }
-    pre { background: #f4f4f4; padding: 1em; border-radius: 6px; }
-    button { margin-top: 1em; padding: 0.5em 1em; font-size: 1em; }
+    body { font-family: Arial, sans-serif; margin: 20px; }
+    textarea { width: 100%; height: 200px; margin-top: 10px; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 6px; max-height: 400px; overflow: auto; }
+    button { padding: 10px 20px; margin-top: 10px; }
   </style>
 </head>
 <body>
-  <h1>Pokémon Hub HTML Parser</h1>
-  <p>Upload a saved <code>pokemongohub.net</code> HTML file to parse stats into JSON.</p>
-  <input type="file" id="fileInput" accept=".html">
-  <button id="downloadBtn" style="display:none;">Download JSON</button>
+  <h1>PokémonHub HTML Parser</h1>
+  <p>Paste the HTML source of the Pokémon GO Hub Pokédex page below and click <b>Parse</b>.</p>
+  
+  <textarea id="htmlInput" placeholder="Paste HTML source here..."></textarea>
+  <br>
+  <button onclick="parseHTML()">Parse</button>
+
+  <h2>Result JSON:</h2>
   <pre id="output"></pre>
 
   <script>
-    document.getElementById("fileInput").addEventListener("change", function(e) {
-      const file = e.target.files[0];
-      if (!file) return;
+    function parseHTML() {
+      const html = document.getElementById("htmlInput").value;
+      if (!html.trim()) {
+        alert("Please paste HTML code first!");
+        return;
+      }
 
-      const reader = new FileReader();
-      reader.onload = function(ev) {
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(ev.target.result, "text/html");
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, "text/html");
 
-        let result = {};
+      // Example: find Pokémon cards in Pokemongohub Pokedex
+      let data = [];
+      doc.querySelectorAll(".pokemon-card").forEach(card => {
+        const name = card.querySelector(".pokemon-card-name")?.innerText.trim() || "";
+        const dex = card.querySelector(".pokemon-card-num")?.innerText.replace("#", "").trim() || "";
+        const types = Array.from(card.querySelectorAll(".pokemon-card-type")).map(t => t.innerText.trim());
 
-        // Example: scrape CP values from tables (adjust selectors to match real HTML)
-        doc.querySelectorAll(".pokemon-container").forEach(poke => {
-          const name = poke.querySelector(".pokemon-title")?.innerText?.trim();
-          if (!name) return;
+        data.push({ dex, name, types });
+      });
 
-          const stats = [];
-          poke.querySelectorAll("table tr").forEach(row => {
-            const cells = row.querySelectorAll("td");
-            if (cells.length === 2) {
-              stats.push({
-                label: cells[0].innerText.trim(),
-                value: cells[1].innerText.trim()
-              });
-            }
-          });
-
-          result[name] = stats;
-        });
-
-        // Show preview
-        const jsonStr = JSON.stringify(result, null, 2);
-        document.getElementById("output").textContent = jsonStr;
-
-        // Enable download
-        const btn = document.getElementById("downloadBtn");
-        btn.style.display = "inline-block";
-        btn.onclick = function() {
-          const blob = new Blob([jsonStr], { type: "application/json" });
-          const a = document.createElement("a");
-          a.href = URL.createObjectURL(blob);
-          a.download = "pokemon_data.json";
-          a.click();
-        };
-      };
-      reader.readAsText(file);
-    });
+      const json = JSON.stringify(data, null, 2);
+      document.getElementById("output").textContent = json;
+      
+      // Save as file
+      const blob = new Blob([json], {type: "application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "pokemon.json";
+      a.click();
+      URL.revokeObjectURL(url);
+    }
   </script>
 </body>
 </html>
