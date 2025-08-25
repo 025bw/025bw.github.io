@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pokémon Hub HTML Parser</title>
+  <style>
+    body { font-family: sans-serif; padding: 1em; }
+    pre { background: #f4f4f4; padding: 1em; border-radius: 6px; }
+    button { margin-top: 1em; padding: 0.5em 1em; font-size: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Pokémon Hub HTML Parser</h1>
+  <p>Upload a saved <code>pokemongohub.net</code> HTML file to parse stats into JSON.</p>
+  <input type="file" id="fileInput" accept=".html">
+  <button id="downloadBtn" style="display:none;">Download JSON</button>
+  <pre id="output"></pre>
+
+  <script>
+    document.getElementById("fileInput").addEventListener("change", function(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(ev) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(ev.target.result, "text/html");
+
+        let result = {};
+
+        // Example: scrape CP values from tables (adjust selectors to match real HTML)
+        doc.querySelectorAll(".pokemon-container").forEach(poke => {
+          const name = poke.querySelector(".pokemon-title")?.innerText?.trim();
+          if (!name) return;
+
+          const stats = [];
+          poke.querySelectorAll("table tr").forEach(row => {
+            const cells = row.querySelectorAll("td");
+            if (cells.length === 2) {
+              stats.push({
+                label: cells[0].innerText.trim(),
+                value: cells[1].innerText.trim()
+              });
+            }
+          });
+
+          result[name] = stats;
+        });
+
+        // Show preview
+        const jsonStr = JSON.stringify(result, null, 2);
+        document.getElementById("output").textContent = jsonStr;
+
+        // Enable download
+        const btn = document.getElementById("downloadBtn");
+        btn.style.display = "inline-block";
+        btn.onclick = function() {
+          const blob = new Blob([jsonStr], { type: "application/json" });
+          const a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = "pokemon_data.json";
+          a.click();
+        };
+      };
+      reader.readAsText(file);
+    });
+  </script>
+</body>
+</html>
