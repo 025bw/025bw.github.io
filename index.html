@@ -2,16 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Pokémon GO IV Search Generator</title>
-  <link rel="stylesheet" href="style.css">
+  <title>Pokémon GO 44/45 IV Search Generator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; }
+    input { padding: 8px; width: 250px; }
+    button { padding: 8px 16px; margin-left: 10px; }
+    pre { background: #f4f4f4; padding: 10px; margin-top: 20px; border-radius: 6px; }
+  </style>
 </head>
 <body>
   <h1>Pokémon GO 44/45 IV Search Generator</h1>
-  <input type="text" id="pokemonInput" placeholder="Enter Pokémon name (e.g., Zacian)">
-  <button onclick="loadData()">Search</button>
+  <p>Enter a Pokémon name:</p>
+  <input type="text" id="pokemonName" placeholder="e.g. Zacian">
+  <button onclick="generateSearch()">Generate</button>
 
-  <div id="result"></div>
+  <h2>Result:</h2>
+  <pre id="output"></pre>
 
-  <script src="script.js"></script>
+  <script>
+    async function generateSearch() {
+      const name = document.getElementById("pokemonName").value.trim();
+      if (!name) {
+        alert("Please enter a Pokémon name!");
+        return;
+      }
+
+      const url = `https://iv4u.lima-city.de/?l=en&m=2&p=${encodeURIComponent(name)}`;
+
+      try {
+        const response = await fetch(url);
+        const html = await response.text();
+
+        // Parse HTML
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        // Grab all rows
+        const rows = doc.querySelectorAll("table tr");
+        let cpData = {};
+
+        rows.forEach(row => {
+          const cols = row.querySelectorAll("td");
+          if (cols.length >= 5) {
+            const atk = cols[1].innerText.trim();
+            const def = cols[2].innerText.trim();
+            const hp  = cols[3].innerText.trim();
+            const cp  = cols[4].innerText.trim();
+
+            const ivString = `${atk}/${def}/${hp}`;
+
+            if (ivString === "15/15/14") cpData["15/15/14"] = cp;
+            if (ivString === "15/14/15") cpData["15/14/15"] = cp;
+            if (ivString === "14/15/15") cpData["14/15/15"] = cp;
+          }
+        });
+
+        if (Object.keys(cpData).length === 0) {
+          document.getElementById("output").textContent = "Could not find CP data!";
+          return;
+        }
+
+        // Build search string
+        let searchParts = [];
+        if (cpData["15/15/14"]) searchParts.push(`cp${cpData["15/15/14"]}&4hp`);
+        if (cpData["15/14/15"]) searchParts.push(`cp${cpData["15/14/15"]}&4defense`);
+        if (cpData["14/15/15"]) searchParts.push(`cp${cpData["14/15/15"]}&4attack`);
+
+        const searchString = searchParts.join(",");
+
+        document.getElementById("output").textContent = searchString;
+      } catch (err) {
+        document.getElementById("output").textContent = "Error fetching data: " + err;
+      }
+    }
+  </script>
 </body>
 </html>
